@@ -3,7 +3,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 import uuid  # Импортируем модуль uuid
-
 class Product(Base):
     __tablename__ = "products"
 
@@ -16,4 +15,6 @@ class Product(Base):
     )
 
     category = relationship("ProductCategory", back_populates="products")
+    product_items = relationship("ProductItem", back_populates="product")
+
 
