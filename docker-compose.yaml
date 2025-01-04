@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    # Сборка из текущей директории, где находится Dockerfile
+    build: .
+    container_name: backend-marketplace
+    # Подключаем .env, чтобы переменные окружения подтянулись
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    # Если нужно, чтобы backend знал, что DB_HOST=db, переопределите:
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432  # Порт внутри контейнера Postgres по умолчанию
+      # Остальные переменные можно оставить как есть, либо переопределить
+
+  db:
+    image: postgres:15
+    container_name: my-postgres
+    # Эти переменные задают начальные данные для PostgreSQL
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      # Если хотите «безопасный» хост-метод аутентификации, уберите trust.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    # Маппим внутренний 5432 на внешний 5434,
+    # чтобы вы могли подключаться к БД из хоста на порту 5434.
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
